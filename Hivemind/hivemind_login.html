@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign In — Hivemind Patient Portal</title>
+  <meta name="description" content="Sign in to your Hivemind account to manage your therapy appointments in Kerala."/>
+  <meta name="robots" content="noindex"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet"/>
+  <style>
+  :root {
+    --ink:#1a1030;--ink-mid:#4a3b7a;--ink-soft:#7c6bb0;--ink-faint:#b8aed4;
+    --brand:#6c4fbf;--brand-h:#5a3fa8;--brand-lt:#ede8f5;--brand-pale:#f5f2fc;
+    --sage:#3d9e78;--sage-lt:#d1fae5;--rose:#c0392b;--rose-lt:#fef2f2;
+    --gold:#e8a84c;--cream:#f8f4ff;--white:#ffffff;--border:#ddd6f0;
+    --shadow-sm:0 1px 4px rgba(74,59,122,.08);--shadow:0 4px 20px rgba(74,59,122,.10);
+    --radius:14px;--radius-sm:10px;--radius-xs:7px;--left-w:400px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{height:100%;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;min-height:100vh;display:flex;flex-direction:column;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:'DM Serif Display',serif;font-weight:400;letter-spacing:-.02em;line-height:1.15;}
+  :focus-visible{outline:3px solid var(--brand);outline-offset:3px;border-radius:4px;}
+  .skip-link{position:absolute;top:-60px;left:16px;background:var(--brand);color:#fff;padding:10px 18px;border-radius:var(--radius-sm);font-weight:600;font-size:.875rem;z-index:9999;transition:top .2s;text-decoration:none;}
+  .skip-link:focus{top:16px;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes slideIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes pop{0%{transform:scale(0);opacity:0}75%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(61,158,120,.45)}60%{box-shadow:0 0 0 7px rgba(61,158,120,0)}}
+
+  /* LAYOUT — left panel narrower than 50% so form dominates */
+  .layout{display:grid;grid-template-columns:var(--left-w) 1fr;min-height:100vh;flex:1;}
+
+  /* LEFT PANEL */
+  .left-panel{background:linear-gradient(170deg,#231650 0%,#160e30 55%,#0d0820 100%);display:flex;flex-direction:column;padding:44px 48px;position:sticky;top:0;height:100vh;overflow:hidden;gap:44px;}
+  .left-panel::before{content:'';position:absolute;top:-80px;right:-80px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(108,79,191,.22) 0%,transparent 70%);pointer-events:none;}
+  .lp-logo{display:flex;align-items:center;gap:10px;flex-shrink:0;position:relative;z-index:1;}
+  .lp-logo-name{font-family:'DM Serif Display',serif;font-size:1.3rem;color:#fff;letter-spacing:-.01em;}
+  .lp-body{flex:1;display:flex;flex-direction:column;justify-content:center;position:relative;z-index:1;gap:28px;}
+  .lp-tag{display:inline-flex;align-items:center;gap:7px;background:rgba(108,79,191,.2);border:1px solid rgba(108,79,191,.35);color:#c4b0f0;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;padding:5px 12px;border-radius:99px;width:fit-content;}
+  .lp-dot{width:6px;height:6px;border-radius:50%;background:var(--sage);animation:pulse 2.2s infinite;flex-shrink:0;}
+  .lp-heading{font-size:clamp(1.7rem,2.2vw,2.1rem);color:#fff;line-height:1.2;}
+  .lp-heading em{color:#c4b0f0;font-style:italic;}
+  .lp-sub{color:rgba(255,255,255,.42);font-size:.85rem;font-weight:300;line-height:1.8;max-width:290px;}
+  .lp-quote{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:22px 24px;position:relative;z-index:1;}
+  .lp-qmark{font-family:'DM Serif Display',serif;font-size:3rem;line-height:.8;color:rgba(108,79,191,.5);display:block;margin-bottom:6px;user-select:none;}
+  .lp-qtext{font-size:.84rem;color:rgba(255,255,255,.62);line-height:1.75;font-weight:300;font-style:italic;margin-bottom:14px;}
+  .lp-qauthor{display:flex;align-items:center;gap:10px;}
+  .lp-av{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#6c4fbf,#9b7fd4);display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:#fff;flex-shrink:0;}
+  .lp-aname{font-size:.78rem;font-weight:600;color:rgba(255,255,255,.75);}
+  .lp-aloc{font-size:.7rem;color:rgba(255,255,255,.3);}
+  .lp-trust{display:flex;flex-direction:column;gap:9px;position:relative;z-index:1;}
+  .lp-titem{display:flex;align-items:center;gap:9px;font-size:.76rem;color:rgba(255,255,255,.38);}
+  .lp-titem svg{flex-shrink:0;opacity:.55;}
+  .lp-titem strong{color:rgba(255,255,255,.62);font-weight:500;}
+
+  /* RIGHT PANEL */
+  .right-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 40px 80px;min-height:100vh;overflow-y:auto;position:relative;background:var(--white);}
+  .back-home{position:absolute;top:20px;right:22px;display:flex;align-items:center;gap:5px;color:var(--ink-soft);font-size:.78rem;font-weight:500;text-decoration:none;transition:color .15s;border-radius:var(--radius-xs);padding:6px 9px;}
+  .back-home:hover{color:var(--brand);background:var(--brand-pale);}
+  .mobile-logo{display:none;align-items:center;gap:9px;justify-content:center;margin-bottom:28px;}
+  .mobile-logo-name{font-family:'DM Serif Display',serif;font-size:1.2rem;color:var(--ink);}
+  .auth-view{display:none;width:100%;max-width:370px;}
+  .auth-view.active{display:block;animation:fadeUp .38s cubic-bezier(.16,1,.3,1) both;}
+
+  /* Form header */
+  .form-kicker{font-size:.68rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin-bottom:7px;}
+  .form-heading{font-size:1.7rem;margin-bottom:4px;color:var(--ink);}
+  .form-subhead{font-size:.855rem;color:var(--ink-soft);font-weight:400;margin-bottom:24px;line-height:1.55;}
+
+  /* Alert */
+  .alert{border-radius:var(--radius-xs);padding:10px 13px;font-size:.8rem;margin-bottom:14px;display:none;align-items:flex-start;gap:8px;line-height:1.5;border:1.5px solid;}
+  .alert.visible{display:flex;animation:slideIn .2s ease both;}
+  .alert-error{background:var(--rose-lt);border-color:#fca5a5;color:var(--rose);}
+  .alert-success{background:var(--sage-lt);border-color:#6ee7b7;color:#166534;}
+  .alert svg{flex-shrink:0;margin-top:1px;}
+
+  /* Form groups */
+  .form-group{margin-bottom:14px;}
+  .form-label{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+  .form-label label{font-size:.8rem;font-weight:600;color:var(--ink);cursor:pointer;}
+  .form-label-hint{font-size:.76rem;color:var(--brand);font-weight:500;cursor:pointer;text-decoration:none;transition:opacity .15s;}
+  .form-label-hint:hover{opacity:.7;text-decoration:underline;}
+
+  .input-wrap{position:relative;}
+  .input-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--ink-faint);pointer-events:none;transition:color .18s;}
+  .input-icon.right{left:auto;right:12px;cursor:pointer;pointer-events:all;border-radius:4px;padding:2px;}
+  .input-icon.right:hover{color:var(--brand);}
+
+  .field-input{width:100%;padding:11px 13px 11px 38px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:#fafafa;font-family:'DM Sans',sans-serif;font-size:.875rem;color:var(--ink);outline:none;transition:border-color .18s,box-shadow .18s,background .18s;-webkit-appearance:none;}
+  .field-input::placeholder{color:var(--ink-faint);font-size:.82rem;}
+  .field-input:hover:not(:focus){border-color:#c4b8e0;background:#fff;}
+  .field-input:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(108,79,191,.12);background:#fff;}
+  .field-input:focus~.input-icon,.input-wrap:focus-within .input-icon:not(.right){color:var(--brand);}
+  .field-input.is-invalid{border-color:var(--rose);background:var(--rose-lt);}
+  .field-input.is-invalid:focus{box-shadow:0 0 0 3px rgba(192,57,43,.1);}
+  .field-input.is-valid{border-color:var(--sage);}
+  .field-input.has-right{padding-right:40px;}
+
+  .field-msg{font-size:.74rem;margin-top:4px;display:none;align-items:center;gap:4px;animation:slideIn .18s ease both;line-height:1.4;}
+  .field-msg.show{display:flex;}
+  .field-msg.is-error{color:var(--rose);}
+  .field-msg.is-success{color:var(--sage);}
+
+  .strength-wrap{margin-top:6px;display:none;}
+  .strength-wrap.show{display:block;}
+  .strength-track{height:3px;background:var(--border);border-radius:99px;overflow:hidden;}
+  .strength-bar{height:100%;border-radius:99px;transition:width .3s,background .3s;width:0;}
+  .strength-text{font-size:.7rem;font-weight:600;margin-top:3px;color:var(--ink-faint);}
+
+  .check-group{display:flex;align-items:flex-start;gap:9px;}
+  .check-group input[type="checkbox"]{width:16px;height:16px;border-radius:4px;accent-color:var(--brand);flex-shrink:0;margin-top:3px;cursor:pointer;}
+  .check-group label{font-size:.8rem;color:var(--ink-soft);cursor:pointer;line-height:1.5;}
+  .check-group a{color:var(--brand);font-weight:500;text-decoration:none;}
+  .check-group a:hover{text-decoration:underline;}
+
+  /* CTA button */
+  .cta-btn{width:100%;padding:13px 20px;border-radius:var(--radius-sm);background:var(--brand);color:#fff;border:none;font-family:'DM Sans',sans-serif;font-weight:600;font-size:.925rem;cursor:pointer;transition:background .18s,transform .14s,box-shadow .18s;box-shadow:0 4px 14px rgba(108,79,191,.26);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:6px;}
+  .cta-btn:hover:not(:disabled){background:var(--brand-h);transform:translateY(-1px);box-shadow:0 6px 20px rgba(108,79,191,.34);}
+  .cta-btn:active:not(:disabled){transform:scale(.98);box-shadow:none;}
+  .cta-btn:disabled{opacity:.65;cursor:not-allowed;}
+
+  .or-row{display:flex;align-items:center;gap:10px;margin:18px 0;}
+  .or-row::before,.or-row::after{content:'';flex:1;height:1px;background:var(--border);}
+  .or-row span{font-size:.72rem;color:var(--ink-faint);font-weight:500;white-space:nowrap;text-transform:uppercase;letter-spacing:.05em;}
+
+  /* Secondary login methods below divider */
+  .alt-methods{display:flex;flex-direction:column;gap:8px;}
+  .alt-btn{width:100%;padding:10px 16px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:#fff;font-family:'DM Sans',sans-serif;font-weight:500;font-size:.855rem;color:var(--ink);cursor:pointer;transition:border-color .15s,background .15s,box-shadow .15s;display:flex;align-items:center;justify-content:center;gap:9px;box-shadow:var(--shadow-sm);}
+  .alt-btn:hover{border-color:#c4b8e0;background:var(--brand-pale);box-shadow:var(--shadow);}
+  .alt-btn:active{transform:scale(.98);}
+
+  .switch-row{text-align:center;margin-top:20px;font-size:.82rem;color:var(--ink-soft);}
+  .switch-link{color:var(--brand);font-weight:600;cursor:pointer;text-decoration:none;}
+  .switch-link:hover{text-decoration:underline;}
+
+  /* Privacy line — near CTA, anchors trust at point of action */
+  .privacy-line{display:flex;align-items:center;gap:6px;margin-top:16px;font-size:.72rem;color:var(--ink-faint);line-height:1.5;justify-content:center;text-align:center;}
+  .privacy-line svg{flex-shrink:0;color:var(--sage);}
+
+  /* OTP */
+  .otp-row{display:flex;gap:8px;justify-content:center;margin:16px 0;}
+  .otp-box{width:46px;height:52px;text-align:center;font-size:1.2rem;font-weight:700;font-family:'DM Serif Display',serif;border:1.5px solid var(--border);border-radius:var(--radius-sm);background:#fafafa;color:var(--ink);outline:none;transition:border-color .18s,box-shadow .18s;}
+  .otp-box:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(108,79,191,.12);background:#fff;}
+  .otp-box.filled{border-color:var(--brand);background:var(--brand-pale);}
+
+  .resend-row{text-align:center;margin-top:12px;font-size:.8rem;color:var(--ink-soft);}
+  .resend-btn{background:none;border:none;font-family:inherit;font-size:inherit;font-weight:600;color:var(--brand);cursor:pointer;padding:0;}
+  .resend-btn:disabled{color:var(--ink-faint);cursor:default;}
+  .resend-timer{font-weight:700;color:var(--rose);}
+
+  /* Register progress */
+  .reg-steps{display:flex;align-items:center;margin-bottom:20px;}
+  .reg-step{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  .reg-circle{width:26px;height:26px;border-radius:50%;border:2px solid var(--border);background:#fff;color:var(--ink-faint);font-size:.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;transition:all .28s;}
+  .reg-circle.active{border-color:var(--brand);background:var(--brand);color:#fff;box-shadow:0 2px 8px rgba(108,79,191,.3);}
+  .reg-circle.done{border-color:var(--sage);background:var(--sage);color:#fff;}
+  .reg-step-lbl{font-size:.62rem;font-weight:600;color:var(--ink-faint);white-space:nowrap;}
+  .reg-step-lbl.active{color:var(--brand);}
+  .reg-step-lbl.done{color:var(--sage);}
+  .reg-line{flex:1;height:2px;background:var(--border);transition:background .28s;min-width:24px;margin-bottom:16px;}
+  .reg-line.done{background:var(--sage);}
+
+  .reg-pane{display:none;}
+  .reg-pane.active{display:block;animation:fadeUp .32s cubic-bezier(.16,1,.3,1) both;}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .privacy-note{display:flex;align-items:flex-start;gap:7px;background:var(--brand-pale);border:1px solid var(--brand-lt);border-radius:var(--radius-xs);padding:10px 12px;margin-top:2px;}
+  .privacy-note p{font-size:.73rem;color:var(--ink-soft);line-height:1.55;}
+  .privacy-note svg{flex-shrink:0;margin-top:1px;color:var(--brand);}
+
+  .back-btn{background:none;border:1.5px solid var(--border);border-radius:var(--radius-sm);padding:11px 16px;font-family:'DM Sans',sans-serif;font-size:.855rem;font-weight:500;color:var(--ink-soft);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px;}
+  .back-btn:hover{border-color:var(--ink-faint);color:var(--ink);background:var(--brand-pale);}
+  .two-btns{display:flex;gap:8px;margin-top:6px;}
+  .two-btns .cta-btn{flex:1;}
+
+  /* Success */
+  .success-screen{text-align:center;}
+  .success-icon{width:68px;height:68px;border-radius:50%;background:var(--sage-lt);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;animation:pop .45s cubic-bezier(.36,.07,.19,.97) both;}
+  .success-screen h2{font-size:1.55rem;margin-bottom:7px;}
+  .success-screen p{color:var(--ink-soft);font-size:.855rem;line-height:1.65;max-width:290px;margin:0 auto 22px;}
+  .user-pill{display:inline-flex;align-items:center;gap:8px;background:var(--brand-pale);border:1px solid var(--brand-lt);border-radius:99px;padding:6px 13px 6px 6px;margin-bottom:22px;}
+  .user-pill-av{width:28px;height:28px;border-radius:50%;background:var(--brand);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.76rem;}
+  .user-pill-name{font-size:.82rem;font-weight:600;color:var(--ink);}
+
+  /* Footer */
+  .auth-footer{position:absolute;bottom:0;left:0;right:0;padding:12px 24px;font-size:.7rem;color:var(--ink-faint);display:flex;justify-content:center;gap:14px;flex-wrap:wrap;border-top:1px solid var(--border);background:var(--white);}
+  .auth-footer a{color:var(--ink-faint);text-decoration:none;transition:color .15s;}
+  .auth-footer a:hover{color:var(--brand);}
+
+  /* Responsive */
+  @media(max-width:800px){
+    .layout{grid-template-columns:1fr;}
+    .left-panel{display:none;}
+    .right-panel{padding:80px 24px 80px;justify-content:flex-start;background:var(--cream);}
+    .mobile-logo{display:flex;}
+    .auth-view{max-width:100%;}
+    .auth-footer{position:static;margin-top:32px;background:transparent;border:none;}
+  }
+  @media(max-width:400px){
+    .two-col{grid-template-columns:1fr;}
+    .otp-box{width:38px;height:46px;font-size:1rem;}
+  }
+  </style>
+</head>
+<body>
+<a href="#main-form" class="skip-link">Skip to sign-in form</a>
+<div class="layout">
+
+<!-- LEFT PANEL -->
+<aside class="left-panel" aria-hidden="true">
+  <div class="lp-logo">
+    <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
+      <circle cx="20" cy="20" r="20" fill="#6c4fbf"/>
+      <polygon points="15.2,6.5 17.7,8 17.7,11 15.2,12.5 12.7,11 12.7,8" fill="#f9c74f" opacity=".85" stroke="#d4930a" stroke-width=".5"/>
+      <polygon points="22.2,6.5 24.7,8 24.7,11 22.2,12.5 19.7,11 19.7,8" fill="#f9c74f" opacity=".85" stroke="#d4930a" stroke-width=".5"/>
+      <path d="M19.5,8 C16.5,8 12,9.5 10,13 C8,16.5 8.5,21 10.5,23.5 C12,25.5 14.5,27 17,26.5 C17.8,26.35 19.5,25.5 19.5,24 Z" fill="#ede8f5" opacity=".75"/>
+      <path d="M20.5,8 C23.5,8 28,9.5 30,13 C32,16.5 31.5,21 29.5,23.5 C28,25.5 25.5,27 23,26.5 C22.2,26.35 20.5,25.5 20.5,24 Z" fill="#ddd5f5" opacity=".75"/>
+      <circle cx="17" cy="17" r="2" fill="#3d1fa0"/><circle cx="23" cy="17" r="2" fill="#3d1fa0"/>
+      <circle cx="17.6" cy="16.5" r=".75" fill="white"/><circle cx="23.6" cy="16.5" r=".75" fill="white"/>
+      <path d="M18,21 Q20,22.5 22,21" stroke="#3d1fa0" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+    </svg>
+    <span class="lp-logo-name">Hivemind</span>
+  </div>
+
+  <div class="lp-body">
+    <div>
+      <div class="lp-tag"><span class="lp-dot"></span> Patient Portal</div>
+      <h2 class="lp-heading" style="margin-top:14px;">Your well-being,<br/><em>in your hands</em></h2>
+      <p class="lp-sub" style="margin-top:10px;">Book sessions, track your therapy journey, and stay connected with your specialist — privately and securely.</p>
+    </div>
+    <div class="lp-quote">
+      <span class="lp-qmark">"</span>
+      <p class="lp-qtext">I found a therapist in Malappuram within minutes. The whole process felt genuinely caring, not clinical.</p>
+      <div class="lp-qauthor">
+        <div class="lp-av">R</div>
+        <div><div class="lp-aname">Ranya M.</div><div class="lp-aloc">Malappuram, Kerala</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="lp-trust">
+    <div class="lp-titem">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span><strong>End-to-end confidential</strong> — your data is never shared</span>
+    </div>
+    <div class="lp-titem">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.6"/></svg>
+      <span><strong>50+ verified</strong> specialists across Kerala</span>
+    </div>
+    <div class="lp-titem">
+      <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span><strong>Free cancellation</strong> up to 2 hours before your session</span>
+    </div>
+  </div>
+</aside>
+
+<!-- RIGHT PANEL -->
+<main class="right-panel" id="main-form" role="main">
+  <a href="hivemind_upgraded.html" class="back-home">
+    <svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M19 12H5M5 12l7 7M5 12l7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+    Back to site
+  </a>
+
+  <div class="mobile-logo" aria-hidden="true">
+    <svg width="28" height="28" viewBox="0 0 40 40" fill="none"><circle cx="20" cy="20" r="20" fill="#6c4fbf"/><path d="M19.5,8 C16.5,8 12,9.5 10,13 C8,16.5 8.5,21 10.5,23.5 C12,25.5 14.5,27 17,26.5 C17.8,26.35 19.5,25.5 19.5,24 Z" fill="#ede8f5" opacity=".75"/><path d="M20.5,8 C23.5,8 28,9.5 30,13 C32,16.5 31.5,21 29.5,23.5 C28,25.5 25.5,27 23,26.5 C22.2,26.35 20.5,25.5 20.5,24 Z" fill="#ddd5f5" opacity=".75"/><circle cx="17" cy="17" r="2" fill="#3d1fa0"/><circle cx="23" cy="17" r="2" fill="#3d1fa0"/><path d="M18,21 Q20,22.5 22,21" stroke="#3d1fa0" stroke-width="1.2" stroke-linecap="round" fill="none"/></svg>
+    <span class="mobile-logo-name">Hivemind</span>
+  </div>
+
+  <!-- LOGIN -->
+  <div class="auth-view active" id="view-login">
+    <div class="form-kicker">Patient Portal</div>
+    <h1 class="form-heading">Welcome back</h1>
+    <p class="form-subhead">Sign in to manage your appointments.</p>
+
+    <div class="alert alert-error" id="login-alert" role="alert" aria-live="assertive">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <div>
+        <span id="login-alert-txt"></span>
+        <div id="resend-confirm-row" style="display:none;margin-top:6px;">
+          <button onclick="resendConfirmation()" style="background:none;border:none;color:var(--brand);font-family:inherit;font-size:.8rem;font-weight:600;cursor:pointer;padding:0;text-decoration:underline;">
+            Resend verification code →
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label"><label for="login-email">Email address</label></div>
+      <div class="input-wrap">
+        <svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="1.8"/><polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input class="field-input" id="login-email" type="email" placeholder="you@email.com" autocomplete="email" aria-required="true" aria-describedby="login-email-err"/>
+      </div>
+      <div class="field-msg is-error" id="login-email-err" role="alert"><svg width="11" height="11" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Enter a valid email address.</div>
+    </div>
+
+    <div class="form-group">
+      <div class="form-label">
+        <label for="login-pw">Password</label>
+        <span class="form-label-hint" onclick="switchView('forgot')" role="button" tabindex="0">Forgot password?</span>
+      </div>
+      <div class="input-wrap">
+        <svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <input class="field-input has-right" id="login-pw" type="password" placeholder="••••••••" autocomplete="current-password" aria-required="true" aria-describedby="login-pw-err"/>
+        <svg class="input-icon right" id="eye-login" width="15" height="15" fill="none" viewBox="0 0 24 24" onclick="toggleEye('login-pw','eye-login')" tabindex="0" role="button" aria-label="Toggle password visibility"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+      </div>
+      <div class="field-msg is-error" id="login-pw-err" role="alert"><svg width="11" height="11" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Password must be at least 6 characters.</div>
+    </div>
+
+
+
+    <div class="form-group check-group" style="margin-bottom:18px;">
+      <input type="checkbox" id="remember-me" onchange="window._rememberMe = this.checked"/>
+      <label for="remember-me">Keep me signed in on this device</label>
+    </div>
+
+    <button class="cta-btn" id="login-btn" onclick="doLogin()">
+      Sign in to your account
+      <svg width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+
+    <div class="or-row"><span>or continue with</span></div>
+    <div class="alt-methods">
+      <button class="alt-btn" id="google-btn" onclick="doSocial('google')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Continue with Google
+      </button>
+
+    </div>
+
+    <div class="privacy-line">
+      <svg width="12" height="12" fill="none" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      Your information is encrypted and never shared with third parties.
+    </div>
+
+    <div class="switch-row">New to Hivemind? <span class="switch-link" onclick="switchView('register')" tabindex="0" role="button">Create a free account</span></div>
+  </div>
+
+  <!-- REGISTER -->
+  <div class="auth-view" id="view-register">
+    <div class="form-kicker">Create Account</div>
+    <h1 class="form-heading">Join Hivemind</h1>
+    <p class="form-subhead">Free to sign up. Book your first session in minutes.</p>
+
+    <div class="reg-steps" aria-label="Registration progress">
+      <div class="reg-step"><div class="reg-circle active" id="rc1">1</div><div class="reg-step-lbl active" id="rl1">Account</div></div>
+      <div class="reg-line" id="rln1"></div>
+      <div class="reg-step"><div class="reg-circle" id="rc2">2</div><div class="reg-step-lbl" id="rl2">Details</div></div>
+      <div class="reg-line" id="rln2"></div>
+      <div class="reg-step"><div class="reg-circle" id="rc3">3</div><div class="reg-step-lbl" id="rl3">Verify</div></div>
+    </div>
+
+    <div class="alert alert-error" id="reg-alert" role="alert" aria-live="assertive">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <span id="reg-alert-txt"></span>
+    </div>
+
+    <!-- Pane 1 -->
+    <div class="reg-pane active" id="rp1">
+      <div class="form-group">
+        <div class="form-label"><label for="r-email">Email address <span aria-hidden="true" style="color:var(--rose)">*</span></label></div>
+        <div class="input-wrap">
+          <svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="1.8"/><polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input class="field-input" id="r-email" type="email" placeholder="you@email.com" autocomplete="email" aria-required="true" oninput="liveEmail('r-email','r-email-err')"/>
+        </div>
+        <div class="field-msg is-error" id="r-email-err" role="alert">Enter a valid email address.</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label"><label for="r-pw">Password <span aria-hidden="true" style="color:var(--rose)">*</span></label></div>
+        <div class="input-wrap">
+          <svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input class="field-input has-right" id="r-pw" type="password" placeholder="Min. 8 characters" autocomplete="new-password" aria-required="true" oninput="liveStrength(this.value)"/>
+          <svg class="input-icon right" id="eye-rpw" width="15" height="15" fill="none" viewBox="0 0 24 24" onclick="toggleEye('r-pw','eye-rpw')" tabindex="0" role="button" aria-label="Toggle password visibility"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+        </div>
+        <div class="strength-wrap" id="strength-wrap"><div class="strength-track"><div class="strength-bar" id="strength-bar"></div></div><div class="strength-text" id="strength-text"></div></div>
+        <div class="field-msg is-error" id="r-pw-err" role="alert">Use at least 8 characters.</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label"><label for="r-confirm">Confirm password <span aria-hidden="true" style="color:var(--rose)">*</span></label></div>
+        <div class="input-wrap">
+          <svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M7 11V7a5 5 0 0110 0v4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <input class="field-input has-right" id="r-confirm" type="password" placeholder="Re-enter password" autocomplete="new-password" aria-required="true" oninput="liveConfirm()"/>
+          <svg class="input-icon right" id="eye-rcon" width="15" height="15" fill="none" viewBox="0 0 24 24" onclick="toggleEye('r-confirm','eye-rcon')" tabindex="0" role="button" aria-label="Toggle confirm password visibility"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/></svg>
+        </div>
+        <div class="field-msg is-error" id="r-confirm-err" role="alert">Passwords don't match.</div>
+        <div class="field-msg is-success" id="r-confirm-ok" role="status"><svg width="11" height="11" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>Looks good!</div>
+      </div>
+      <div class="form-group check-group" style="margin-bottom:18px;">
+        <input type="checkbox" id="r-terms" aria-required="true"/>
+        <label for="r-terms">I agree to the <a href="#" onclick="return false">Terms of Service</a> and <a href="#" onclick="return false">Privacy Policy</a></label>
+      </div>
+      <button class="cta-btn" onclick="regStep(1)">Continue →</button>
+      <div class="switch-row">Already have an account? <span class="switch-link" onclick="switchView('login')" tabindex="0" role="button">Sign in</span></div>
+    </div>
+
+    <!-- Pane 2 -->
+    <div class="reg-pane" id="rp2">
+      <div class="two-col">
+        <div class="form-group">
+          <div class="form-label"><label for="r-fname">First name <span aria-hidden="true" style="color:var(--rose)">*</span></label></div>
+          <div class="input-wrap"><svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/></svg><input class="field-input" id="r-fname" type="text" placeholder="First name" autocomplete="given-name" aria-required="true"/></div>
+          <div class="field-msg is-error" id="r-fname-err" role="alert">Required.</div>
+        </div>
+        <div class="form-group">
+          <div class="form-label"><label for="r-lname">Last name <span aria-hidden="true" style="color:var(--rose)">*</span></label></div>
+          <div class="input-wrap"><svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.8"/></svg><input class="field-input" id="r-lname" type="text" placeholder="Last name" autocomplete="family-name" aria-required="true"/></div>
+          <div class="field-msg is-error" id="r-lname-err" role="alert">Required.</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-label"><label for="r-phone">Phone number <span aria-hidden="true" style="color:var(--rose)">*</span></label></div>
+        <div class="input-wrap"><svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 10.8 19.79 19.79 0 01.07 2.18 2 2 0 012.06 0h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input class="field-input" id="r-phone" type="tel" placeholder="+91 94470 00000" autocomplete="tel" aria-required="true"/></div>
+        <div class="field-msg is-error" id="r-phone-err" role="alert">Enter a valid phone number.</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label"><label for="r-dob">Date of birth <span style="color:var(--ink-faint);font-weight:400;font-size:.73rem;">(optional)</span></label></div>
+        <div class="input-wrap"><svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input class="field-input" id="r-dob" type="date" autocomplete="bday"/></div>
+      </div>
+      <div class="privacy-note"><svg width="13" height="13" fill="none" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><p>Your details are only shared with your chosen specialist, never stored beyond your session.</p></div>
+      <div class="two-btns"><button class="back-btn" onclick="regStep(2,'back')">← Back</button><button class="cta-btn" onclick="regStep(2)">Continue →</button></div>
+    </div>
+
+    <!-- Pane 3 OTP -->
+    <div class="reg-pane" id="rp3">
+      <div style="text-align:center;margin-bottom:18px;">
+        <div style="width:52px;height:52px;border-radius:14px;background:var(--brand-lt);margin:0 auto 12px;display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#6c4fbf" stroke-width="1.8"/><polyline points="22,6 12,13 2,6" stroke="#6c4fbf" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <p style="font-size:.855rem;color:var(--ink-soft);line-height:1.6;">We sent an 8-digit code to<br/><strong style="color:var(--ink);" id="otp-email-show"></strong></p>
+        
+      </div>
+      <div style="margin:16px 0;">
+        <input class="field-input" id="otp-single"
+          type="text" inputmode="numeric"
+          placeholder="Enter 8-digit code from your email"
+          maxlength="8"
+          style="text-align:center;font-size:1.4rem;font-family:'DM Serif Display',serif;letter-spacing:8px;padding:14px 16px;"
+          aria-label="Verification code"
+          oninput="this.value=this.value.replace(/\D/g,'')"/>
+      </div>
+      <div class="alert alert-error" id="otp-alert" role="alert" aria-live="assertive"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span id="otp-alert-txt"></span></div>
+      <button class="cta-btn" id="verify-btn" onclick="doVerify()" style="margin-top:4px;">Verify &amp; create account</button>
+      <div class="resend-row">Didn't get it? <button class="resend-btn" id="resend-btn" onclick="doResend()" disabled>Resend in <span class="resend-timer" id="resend-timer">60s</span></button></div>
+      <div style="text-align:center;margin-top:12px;"><button class="back-btn" onclick="goChangeEmail()" style="display:inline-flex;margin:0 auto;">← Change email</button></div>
+    </div>
+  </div>
+
+  <!-- FORGOT -->
+  <div class="auth-view" id="view-forgot">
+    <div class="reg-pane active" id="fp-a">
+      <button class="back-btn" onclick="switchView('login')" style="margin-bottom:18px;">← Back to sign in</button>
+      <div class="form-kicker">Password Reset</div>
+      <h1 class="form-heading">Forgot your password?</h1>
+      <p class="form-subhead">Enter your email and we'll send a secure reset link.</p>
+      <div class="alert alert-error" id="forgot-alert" role="alert" aria-live="assertive"><svg width="14" height="14" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.8"/><path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span id="forgot-alert-txt"></span></div>
+      <div class="form-group">
+        <div class="form-label"><label for="forgot-email">Email address</label></div>
+        <div class="input-wrap"><svg class="input-icon" width="15" height="15" fill="none" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="currentColor" stroke-width="1.8"/><polyline points="22,6 12,13 2,6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><input class="field-input" id="forgot-email" type="email" placeholder="you@email.com" autocomplete="email" aria-required="true"/></div>
+        <div class="field-msg is-error" id="forgot-email-err" role="alert">Enter a valid email address.</div>
+      </div>
+      <button class="cta-btn" id="forgot-btn" onclick="doForgot()">Send reset link</button>
+      <div class="switch-row">Remembered it? <span class="switch-link" onclick="switchView('login')" tabindex="0" role="button">Sign in</span></div>
+    </div>
+    <div class="reg-pane" id="fp-b">
+      <div style="text-align:center;padding:8px 0;">
+        <div style="width:60px;height:60px;border-radius:50%;background:var(--brand-lt);margin:0 auto 16px;display:flex;align-items:center;justify-content:center;animation:pop .45s both;"><svg width="26" height="26" fill="none" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#6c4fbf" stroke-width="1.8"/><path d="M5 13l4 4L19 7" stroke="#6c4fbf" stroke-width="2" stroke-linecap="round"/></svg></div>
+        <h2 style="font-size:1.45rem;margin-bottom:8px;">Check your inbox</h2>
+        <p style="color:var(--ink-soft);font-size:.855rem;line-height:1.65;margin-bottom:22px;">Reset link sent to <strong id="forgot-sent-to" style="color:var(--ink);"></strong>.<br/><span style="font-size:.78rem;color:var(--ink-faint);">Expires in 30 minutes.</span></p>
+        <button class="cta-btn" style="max-width:260px;margin:0 auto;" onclick="switchView('login')">← Back to sign in</button>
+        <div class="switch-row"><span class="switch-link" onclick="doForgot()" tabindex="0" role="button">Resend email</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="auth-view" id="view-success">
+    <div class="success-screen">
+      <div class="success-icon"><svg width="32" height="32" fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#3d9e78" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="user-pill" id="user-pill"><div class="user-pill-av" id="user-av"></div><span class="user-pill-name" id="user-name-disp"></span></div>
+      <h2>You're signed in!</h2>
+      <p>Your next appointment is just a click away. Welcome back to Hivemind.</p>
+      <a href="hivemind_upgraded.html" class="cta-btn" style="text-decoration:none;max-width:260px;margin:0 auto;display:flex;">Go to your dashboard →</a>
+      <button onclick="doLogout()" style="margin-top:14px;background:none;border:1.5px solid #ddd6f0;border-radius:10px;padding:11px 24px;font-family:'DM Sans',sans-serif;font-size:.875rem;font-weight:500;color:#7c6bb0;cursor:pointer;display:flex;align-items:center;gap:7px;margin-left:auto;margin-right:auto;transition:all .18s;" onmouseover="this.style.borderColor='#c0392b';this.style.color='#c0392b'" onmouseout="this.style.borderColor='#ddd6f0';this.style.color='#7c6bb0'">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Sign out
+      </button>
+    </div>
+  </div>
+
+  <div class="auth-footer">
+    <a href="hivemind_upgraded.html">hivemind.in</a>
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms</a>
+    <a href="mailto:hivemindkerala@gmail.com">Contact</a>
+  </div>
+</main>
+</div>
+
+<script type="module">
+import { createClient } from
+  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+const supabase = createClient(
+  'https://zmekwbeejlkqnrajwplv.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InptZWt3YmVlamxrcW5yYWp3cGx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE2NDI1MzgsImV4cCI6MjA4NzIxODUzOH0.vnFDEL7nOjEI-G3dJDY9kXB7ekwj3RqKATrtIZoGJm8',
+  {
+    auth: {
+      // Default: session expires when browser closes
+      // If "Keep me signed in" is checked, we store in localStorage instead
+      storage: window.sessionStorage,
+      persistSession: true,
+    }
+  }
+);
+
+async function apiLogin(email, password) {
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) throw new Error(error.message);
+  return data.user;
+}
+
+async function apiRegister({ email, password, firstName, lastName, phone }) {
+  const { error } = await supabase.auth.signUp({
+    email, password,
+    options: { data: { first_name: firstName, last_name: lastName, phone } }
+  });
+  if (error) throw new Error(error.message);
+}
+
+async function apiSendReset(email) {
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://hivemindkerala.netlify.app/hivemind_login.html'
+  });
+  if (error) throw new Error(error.message);
+}
+
+async function apiVerifyOTP(token) {
+  const { error } = await supabase.auth.verifyOtp({
+    email: regData.email,
+    token,
+    type: 'signup'
+  });
+  if (error) throw new Error(error.message);
+}
+
+function switchView(name){
+  document.querySelectorAll('.auth-view').forEach(v=>v.classList.remove('active'));
+  const el=document.getElementById('view-'+name);if(el)el.classList.add('active');
+  if(name==='forgot'){
+    document.getElementById('fp-a')?.classList.add('active');
+    document.getElementById('fp-b')?.classList.remove('active');
+  }
+  clearAlerts();
+}
+
+function showAlert(id,tid,msg,type='error'){
+  const el=document.getElementById(id);
+  const tel=document.getElementById(tid);
+  if(!el||!tel)return;
+  el.className=`alert alert-${type} visible`;
+  tel.textContent=msg;
+}
+function clearAlerts(){document.querySelectorAll('.alert').forEach(a=>a.classList.remove('visible'));}
+
+function toggleEye(iid,eid){
+  const i=document.getElementById(iid),e=document.getElementById(eid);
+  const s=i.type==='password';
+  i.type=s?'text':'password';
+  e.innerHTML=s
+    ?`<path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><line x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>`
+    :`<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/>`;
+}
+
+const isEmail=v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+
+function fieldErr(iid,eid,show){
+  const i=document.getElementById(iid),e=document.getElementById(eid);
+  if(!i||!e)return;
+  i.classList.toggle('is-invalid',show);
+  e.classList.toggle('show',show);
+}
+
+function liveEmail(iid,eid){
+  const v=document.getElementById(iid).value.trim();
+  if(!v){fieldErr(iid,eid,false);return;}
+  fieldErr(iid,eid,!isEmail(v));
+  document.getElementById(iid).classList.toggle('is-valid',isEmail(v));
+}
+
+function liveStrength(pw){
+  const w=document.getElementById('strength-wrap'),b=document.getElementById('strength-bar'),t=document.getElementById('strength-text');
+  if(!pw){w.classList.remove('show');return;}
+  w.classList.add('show');
+  let s=0;
+  if(pw.length>=8)s++;if(pw.length>=12)s++;
+  if(/[A-Z]/.test(pw))s++;if(/[0-9]/.test(pw))s++;if(/[^A-Za-z0-9]/.test(pw))s++;
+  const L=[{w:'20%',c:'#ef4444',l:'Weak'},{w:'40%',c:'#f97316',l:'Fair'},{w:'60%',c:'#eab308',l:'Good'},{w:'80%',c:'#22c55e',l:'Strong'},{w:'100%',c:'#10b981',l:'Very strong'}];
+  const lv=L[Math.min(s,4)];
+  b.style.width=lv.w;b.style.background=lv.c;t.textContent=lv.l;t.style.color=lv.c;
+}
+
+function liveConfirm(){
+  const pw=document.getElementById('r-pw').value,c=document.getElementById('r-confirm').value;
+  const err=document.getElementById('r-confirm-err'),ok=document.getElementById('r-confirm-ok'),inp=document.getElementById('r-confirm');
+  if(!c){err.classList.remove('show');ok.classList.remove('show');inp.classList.remove('is-invalid','is-valid');return;}
+  const m=pw===c;
+  err.classList.toggle('show',!m);ok.classList.toggle('show',m);
+  inp.classList.toggle('is-invalid',!m);inp.classList.toggle('is-valid',m);
+}
+
+function setBusy(id,busy,lbl){
+  const b=document.getElementById(id);if(!b)return;
+  b.disabled=busy;
+  if(busy) b.innerHTML=`<svg style="animation:spin 1s linear infinite" width="15" height="15" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="rgba(255,255,255,.3)" stroke-width="3"/><path d="M12 2a10 10 0 0110 10" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg> ${lbl}`;
+  else b.textContent=lbl;
+}
+
+async function doLogin(){
+  clearAlerts();
+  const email=document.getElementById('login-email').value.trim();
+  const pw=document.getElementById('login-pw').value;
+  let ok=true;
+  if(!email||!isEmail(email)){fieldErr('login-email','login-email-err',true);ok=false;}
+  else fieldErr('login-email','login-email-err',false);
+  if(pw.length<6){fieldErr('login-pw','login-pw-err',true);ok=false;}
+  else fieldErr('login-pw','login-pw-err',false);
+  if(!ok)return;
+  setBusy('login-btn',true,'Signing in…');
+  try{
+    const u=await apiLogin(email,pw);
+    const name=(u.user_metadata?.first_name||'')+(u.user_metadata?.last_name?' '+u.user_metadata.last_name:'')||u.email;
+    showSuccess(name);
+  }catch(e){
+    let msg = e.message;
+    if(msg.toLowerCase().includes('email not confirmed')){
+      msg = 'Your email is not confirmed yet. Click below to resend your verification code.';
+      setTimeout(()=>{
+        const row = document.getElementById('resend-confirm-row');
+        if(row) row.style.display='block';
+        // Store the email so resend knows where to send
+        window._unconfirmedEmail = email;
+      }, 100);
+    } else if(msg.toLowerCase().includes('invalid login credentials')){
+      msg = 'Incorrect email or password. Please check and try again.';
+    }
+    showAlert('login-alert','login-alert-txt', msg);
+  }finally{
+    setBusy('login-btn',false,'Sign in to your account');
+  }
+}
+
+async function doSocial(provider){
+  const btn = document.getElementById('google-btn');
+  if(btn){ btn.disabled=true; btn.textContent='Checking…'; }
+
+  // Step 1: Use Google to get the user's email without creating a session
+  // We can't check email before OAuth redirect, so instead we:
+  // After Google redirects back, check if user was already registered via email/password
+  // We do this by storing a flag BEFORE redirecting, then checking on homepage
+
+  // Store flag so homepage knows to verify registration
+  try { sessionStorage.setItem('hm_oauth_check', '1'); } catch(e){}
+
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: provider,
+      options: {
+        redirectTo: 'https://hivemindkerala.netlify.app/hivemind_upgraded.html',
+        queryParams: { access_type: 'offline', prompt: 'select_account' }
+      }
+    });
+    if (error) throw error;
+  } catch(e) {
+    if(btn){ btn.disabled=false; btn.textContent='Continue with Google'; }
+    showAlert('login-alert', 'login-alert-txt', 'Could not connect to Google. Please try again.');
+  }
+}
+
+let regData={};
+
+function updateStepUI(s){
+  for(let i=1;i<=3;i++){
+    const c=document.getElementById('rc'+i),l=document.getElementById('rl'+i);
+    if(!c)continue;
+    c.classList.remove('active','done');l.classList.remove('active','done');
+    if(i<s){c.classList.add('done');c.textContent='✓';l.classList.add('done');}
+    else if(i===s){c.classList.add('active');c.textContent=i;l.classList.add('active');}
+    else{c.textContent=i;}
+  }
+  for(let i=1;i<=2;i++){
+    const ln=document.getElementById('rln'+i);
+    if(ln)ln.classList.toggle('done',i<s);
+  }
+}
+
+function showRegPane(id){
+  document.querySelectorAll('.reg-pane').forEach(p=>p.classList.remove('active'));
+  document.getElementById(id)?.classList.add('active');
+}
+
+async function regStep(from,dir){
+  clearAlerts();
+  if(dir==='back'){updateStepUI(from);showRegPane('rp'+from);return;}
+  if(from===1){
+    const email=document.getElementById('r-email').value.trim();
+    const pw=document.getElementById('r-pw').value;
+    const con=document.getElementById('r-confirm').value;
+    const terms=document.getElementById('r-terms').checked;
+    let ok=true;
+    if(!email||!isEmail(email)){fieldErr('r-email','r-email-err',true);ok=false;}else fieldErr('r-email','r-email-err',false);
+    if(pw.length<8){fieldErr('r-pw','r-pw-err',true);ok=false;}else fieldErr('r-pw','r-pw-err',false);
+    if(pw!==con){fieldErr('r-confirm','r-confirm-err',true);ok=false;}else fieldErr('r-confirm','r-confirm-err',false);
+    if(!terms){showAlert('reg-alert','reg-alert-txt','Please agree to the Terms of Service.');ok=false;}
+    if(!ok)return;
+    regData.email=email;regData.password=pw;
+    updateStepUI(2);showRegPane('rp2');
+  } else if(from===2){
+    const fn=document.getElementById('r-fname').value.trim();
+    const ln=document.getElementById('r-lname').value.trim();
+    const ph=document.getElementById('r-phone').value.trim();
+    let ok=true;
+    if(!fn){fieldErr('r-fname','r-fname-err',true);ok=false;}else fieldErr('r-fname','r-fname-err',false);
+    if(!ln){fieldErr('r-lname','r-lname-err',true);ok=false;}else fieldErr('r-lname','r-lname-err',false);
+    if(!ph||ph.replace(/\D/g,'').length<7){fieldErr('r-phone','r-phone-err',true);ok=false;}else fieldErr('r-phone','r-phone-err',false);
+    if(!ok)return;
+    const btns=document.querySelectorAll('#rp2 button');
+    btns.forEach(b=>b.disabled=true);
+    try{
+      await apiRegister({email:regData.email,password:regData.password,firstName:fn,lastName:ln,phone:ph});
+      regData.firstName=fn;regData.lastName=ln;
+    }catch(e){
+      showAlert('reg-alert','reg-alert-txt',e.message);
+      btns.forEach(b=>b.disabled=false);return;
+    }
+    btns.forEach(b=>b.disabled=false);
+    document.getElementById('otp-email-show').textContent=regData.email;
+    updateStepUI(3);showRegPane('rp3');
+    startTimer();
+    document.querySelectorAll('.otp-box')[0]?.focus();
+  } else if(from===3&&dir==='back'){
+    updateStepUI(2);showRegPane('rp2');
+  }
+}
+
+// OTP single input — auto-verify when 6+ digits entered
+document.addEventListener('DOMContentLoaded',()=>{
+  const inp = document.getElementById('otp-single');
+  if(inp){
+    inp.addEventListener('input',()=>{
+      inp.value = inp.value.replace(/\D/g,'');
+      // auto-submit at 8 digits
+      if(inp.value.length === 8) doVerify();
+    });
+  }
+});
+
+async function doVerify(){
+  const inp = document.getElementById('otp-single');
+  const code = inp ? inp.value.trim() : '';
+  if(code.length < 8){showAlert('otp-alert','otp-alert-txt','Please enter the full 8-digit code from your email.');return;}
+  setBusy('verify-btn',true,'Verifying…');
+  try{
+    await apiVerifyOTP(code);
+    showSuccess(regData.firstName+' '+regData.lastName);
+  }catch(e){
+    showAlert('otp-alert','otp-alert-txt',e.message);
+    const otpInp = document.getElementById('otp-single');
+    if(otpInp){ otpInp.value=''; otpInp.focus(); }
+  }finally{
+    setBusy('verify-btn',false,'Verify & create account');
+  }
+}
+
+let ti=null;
+function startTimer(){
+  clearInterval(ti);
+  let s=60;
+  const btn=document.getElementById('resend-btn');
+  btn.disabled=true;
+  btn.innerHTML=`Resend in <span class="resend-timer" id="resend-timer">${s}s</span>`;
+  ti=setInterval(()=>{
+    s--;
+    const t=document.getElementById('resend-timer');
+    if(t)t.textContent=s+'s';
+    if(s<=0){clearInterval(ti);btn.disabled=false;btn.textContent='Resend code';}
+  },1000);
+}
+
+async function doResend(){
+  // Clear the single OTP input
+  const inp = document.getElementById('otp-single');
+  if(inp) inp.value = '';
+  clearAlerts();
+  startTimer();
+  // Resend signup OTP — call signUp again with same credentials
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email: regData.email
+  });
+  if(error) showAlert('otp-alert','otp-alert-txt', error.message);
+}
+
+async function doForgot(){
+  clearAlerts();
+  const email=document.getElementById('forgot-email').value.trim();
+  if(!email||!isEmail(email)){fieldErr('forgot-email','forgot-email-err',true);return;}
+  fieldErr('forgot-email','forgot-email-err',false);
+  setBusy('forgot-btn',true,'Sending…');
+  try{
+    await apiSendReset(email);
+    document.getElementById('forgot-sent-to').textContent=email;
+    document.getElementById('fp-a').classList.remove('active');
+    document.getElementById('fp-b').classList.add('active');
+  }catch(e){
+    showAlert('forgot-alert','forgot-alert-txt',e.message);
+  }finally{
+    setBusy('forgot-btn',false,'Send reset link');
+  }
+}
+
+function showSuccess(name){
+  try { sessionStorage.setItem('hm_user', name); } catch(e){}
+  try {
+    const remember = document.getElementById('remember-me')?.checked || window._rememberMe;
+    if (remember) {
+      localStorage.setItem('hm_user', name);
+      localStorage.setItem('hm_remember', '1');
+    } else {
+      localStorage.removeItem('hm_user');
+      localStorage.removeItem('hm_remember');
+    }
+  } catch(e){}
+  window.location.href = 'hivemind_upgraded.html?user=' + encodeURIComponent(name);
+}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.getAttribute('role')==='button')e.target.click();
+});
+
+// Sign out
+async function doLogout(){
+  await supabase.auth.signOut();
+  switchView('login');
+  document.getElementById('login-email').value = '';
+  document.getElementById('login-pw').value = '';
+}
+window.doLogout = doLogout;
+
+// Go back to step 1 (email field) when user wants to change email
+function goChangeEmail(){
+  updateStepUI(1);
+  showRegPane('rp1');
+  // Clear email field so user can type a new one
+  const emailEl = document.getElementById('r-email');
+  if(emailEl){ emailEl.value=''; emailEl.classList.remove('is-valid','is-invalid'); }
+  regData = {};
+}
+window.goChangeEmail = goChangeEmail;
+
+// Resend signup confirmation to unconfirmed email
+async function resendConfirmation(){
+  const email = window._unconfirmedEmail || document.getElementById('login-email').value.trim();
+  if(!email) return;
+  try {
+    const { error } = await supabase.auth.resend({ type: 'signup', email });
+    if(error) throw error;
+    // Hide login form, show OTP screen in register flow
+    regData.email = email;
+    // Switch to register view at OTP step
+    switchView('register');
+    updateStepUI(3);
+    showRegPane('rp3');
+    document.getElementById('otp-email-show').textContent = email;
+    startTimer();
+    document.getElementById('otp-single')?.focus();
+  } catch(e) {
+    showAlert('login-alert','login-alert-txt', 'Could not resend: ' + e.message);
+  }
+}
+window.resendConfirmation = resendConfirmation;
+
+// Expose to HTML onclick attributes (required for type="module")
+window.switchView   = switchView;
+
+// Show error if redirected back from homepage due to unregistered Google account
+(function checkLoginError() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('error') === 'not_registered') {
+    showAlert('login-alert', 'login-alert-txt',
+      'No account found for that Google email. Please register first using "Create a free account".');
+  }
+})();
+window.toggleEye    = toggleEye;
+window.doLogin      = doLogin;
+window.doSocial     = doSocial;
+window.doForgot     = doForgot;
+window.doVerify     = doVerify;
+window.doResend     = doResend;
+window.regStep      = regStep;
+window.liveEmail    = liveEmail;
+window.liveStrength = liveStrength;
+window.liveConfirm  = liveConfirm;
+</script>
+</body>
+</html>
