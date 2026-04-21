@@ -1468,15 +1468,21 @@ async function sendChat() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          system_instruction: {
-            parts: [{ text: HM_CHAT.systemPrompt }]
-          },
-          contents: history,
-          generationConfig: {
-            maxOutputTokens: 400,
-            temperature: 0.75
-          }
-        })
+  contents: [
+    {
+      parts: [
+        {
+          text: HM_CHAT.systemPrompt + "\n\nUser: " + text
+        }
+      ]
+    }
+  ],
+  generationConfig: {
+    temperature: 0.75,
+    maxOutputTokens: 400
+  }
+})
+
       }
     );
 
