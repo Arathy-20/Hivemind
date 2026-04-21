@@ -1341,7 +1341,7 @@ const HM_CHAT = {
   messages: [],
   loading: false,
   // ⚠️ Replace with your Google Gemini API key from aistudio.google.com
-  apiKey: 'AIzaSyAtXX8lRmuivixa4NeIGa-W7nvUhbZQj5g',
+  apiKey: 'AIzaSyBlW2dbHRM05OIaJVl-v14xAdV8GvxgqMY',
 
   systemPrompt: `You are Myna, a warm and knowledgeable AI assistant for Hivemind — a mental health booking platform in Kerala, India. Your role is to:
 
@@ -1493,9 +1493,11 @@ async function sendChat() {
     hideTyping();
     appendBotMessage(reply);
   } catch(e) {
-    hideTyping();
-    appendBotMessage("I'm having a little trouble connecting right now. Please try again in a moment, or reach us at hivemindkerala@gmail.com 💜");
-  } finally {
+  console.error(e);
+  hideTyping();
+  appendBotMessage("Error: " + e.message);
+}
+finally {
     HM_CHAT.loading = false;
     document.getElementById('hm-chat-send').disabled = false;
     document.getElementById('hm-chat-input')?.focus();
