@@ -1490,7 +1490,8 @@ async function sendChat() {
 
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
-      console.error('Gemini error:', errData);
+      console.error('Gemini full error:', JSON.stringify(errData));
+      console.error('Request contents sent:', JSON.stringify(contents));
       throw new Error('API error ' + response.status);
     }
     const data = await response.json();
